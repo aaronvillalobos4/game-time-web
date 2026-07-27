@@ -1,65 +1,118 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
 
 export default function Home() {
+  const [formData, setFormData] = useState({
+    game: "",
+    date: "",
+    origin: "",
+    budget: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [itinerary, setItinerary] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setItinerary(null);
+
+    try {
+      const response = await fetch("https://game-time-bot.com/api/plan-trip", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setItinerary(data.itinerary);
+      } else {
+        alert("Failed to plan trip. Please try again.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error connecting to server.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+    <main className="min-h-screen bg-slate-900 text-white flex flex-col items-center justify-center p-6">
+      <div className="max-w-2xl w-full space-y-6">
+        <h1 className="text-4xl font-extrabold text-center text-amber-400">
+          🏆 Game Time
+        </h1>
+        <p className="text-center text-slate-300">
+          Plan your complete sports travel itinerary (tickets, flights, hotels).
+        </p>
+
+        <form onSubmit={handleSubmit} className="bg-slate-800 p-6 rounded-xl space-y-4 shadow-lg">
+          <div>
+            <label className="block text-sm font-medium text-slate-300">Game / Event</label>
+            <input
+              type="text"
+              placeholder="e.g. Mavericks @ Celtics"
+              className="w-full mt-1 p-3 bg-slate-700 rounded-lg text-white border border-slate-600 focus:outline-none focus:border-amber-400"
+              value={formData.game}
+              onChange={(e) => setFormData({ ...formData, game: e.target.value })}
+              required
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-300">Date</label>
+              <input
+                type="text"
+                placeholder="March 14"
+                className="w-full mt-1 p-3 bg-slate-700 rounded-lg text-white border border-slate-600 focus:outline-none focus:border-amber-400"
+                value={formData.date}
+                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-300">Departure City</label>
+              <input
+                type="text"
+                placeholder="Austin"
+                className="w-full mt-1 p-3 bg-slate-700 rounded-lg text-white border border-slate-600 focus:outline-none focus:border-amber-400"
+                value={formData.origin}
+                onChange={(e) => setFormData({ ...formData, origin: e.target.value })}
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-300">Total Budget</label>
+              <input
+                type="text"
+                placeholder="$1200"
+                className="w-full mt-1 p-3 bg-slate-700 rounded-lg text-white border border-slate-600 focus:outline-none focus:border-amber-400"
+                value={formData.budget}
+                onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
+                required
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold rounded-lg transition disabled:opacity-50"
           >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+            {loading ? "Gathering Options..." : "Generate Custom Itinerary"}
+          </button>
+        </form>
+
+        {itinerary && (
+          <div className="bg-slate-800 p-6 rounded-xl shadow-lg border border-slate-700 whitespace-pre-wrap text-slate-200">
+            <h2 className="text-2xl font-bold text-amber-400 mb-4">📋 Your Custom Itinerary</h2>
+            {itinerary}
+          </div>
+        )}
+      </div>
+    </main>
   );
 }
