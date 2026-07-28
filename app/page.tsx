@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import ReactMarkdown from "react-markdown";
 
 export default function Home() {
   const [event, setEvent] = useState("");
@@ -9,7 +10,7 @@ export default function Home() {
   const [departureCity, setDepartureCity] = useState("");
   const [budget, setBudget] = useState("");
   const [loading, setLoading] = useState(false);
-  const [itinerary, setItinerary] = useState<any>(null);
+  const [itinerary, setItinerary] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const handleGenerate = async (e: React.FormEvent) => {
@@ -19,7 +20,6 @@ export default function Home() {
     setErrorMsg(null);
 
     try {
-      // Points directly to your live Render FastAPI service
       const response = await fetch("https://game-time-f7qt.onrender.com/api/itinerary", {
         method: "POST",
         headers: { 
@@ -38,11 +38,17 @@ export default function Home() {
       }
 
       const data = await response.json();
-      setItinerary(data);
+      
+      // Extract the markdown string from the backend response
+      if (data.itinerary) {
+        setItinerary(data.itinerary);
+      } else {
+        setItinerary(JSON.stringify(data, null, 2));
+      }
     } catch (err: any) {
       console.error("Error generating itinerary:", err);
       setErrorMsg(
-        err.message || "Failed to fetch itinerary. Check backend server connection or CORS settings."
+        err.message || "Failed to fetch itinerary. Check backend server connection."
       );
     } finally {
       setLoading(false);
@@ -51,7 +57,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-[#0f172a] text-white flex flex-col items-center justify-center p-6">
-      <div className="w-full max-w-xl text-center space-y-6">
+      <div className="w-full max-w-3xl text-center space-y-6 my-8">
         
         {/* Header / Brand Logo */}
         <div className="flex flex-col items-center justify-center gap-3">
@@ -88,7 +94,7 @@ export default function Home() {
             />
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
               <label className="block text-xs font-semibold text-gray-400 mb-1">
                 Date
@@ -141,7 +147,7 @@ export default function Home() {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                <span>Generating Itinerary (connecting to backend)...</span>
+                <span>Generating Custom Itinerary...</span>
               </>
             ) : (
               "Generate Custom Itinerary"
@@ -157,13 +163,15 @@ export default function Home() {
           </div>
         )}
 
-        {/* Success Output Display */}
+        {/* Formatted Markdown Output */}
         {itinerary && (
-          <div className="bg-[#1e293b] p-6 rounded-2xl border border-slate-800 text-left space-y-3 shadow-xl">
-            <h2 className="text-xl font-bold text-white">Your Custom Itinerary</h2>
-            <pre className="text-xs text-gray-300 bg-[#0f172a] p-4 rounded-lg overflow-x-auto border border-slate-800">
-              {JSON.stringify(itinerary, null, 2)}
-            </pre>
+          <div className="bg-[#1e293b] p-6 sm:p-8 rounded-2xl border border-slate-800 text-left space-y-4 shadow-xl">
+            <h2 className="text-2xl font-bold text-white border-b border-slate-700 pb-3">
+              Your Custom Itinerary
+            </h2>
+            <div className="prose prose-invert max-w-none text-slate-200 text-sm leading-relaxed space-y-4">
+              <ReactMarkdown>{itinerary}</ReactMarkdown>
+            </div>
           </div>
         )}
 
