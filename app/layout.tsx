@@ -3,7 +3,7 @@ import Script from "next/script";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Game Time - Custom Sports Travel Itineraries",
+  title: "Game Time - Custom Sports Trips Itineraries",
   description: "Plan your ultimate sports trip with automated ticket, flight, and hotel options.",
   verification: {
     other: {
