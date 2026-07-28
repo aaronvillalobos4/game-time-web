@@ -8,7 +8,7 @@ export default function Home() {
         {/* Header / Brand Logo */}
         <div className="flex flex-col items-center justify-center gap-3">
           <Image
-            src="/logo.PNG"
+            src="/logo.png"
             alt="Game Time Logo"
             width={120}
             height={120}
