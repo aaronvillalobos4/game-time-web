@@ -15,7 +15,7 @@ export default function Home() {
             priority
             className="h-auto w-auto max-h-24 object-contain"
           />
-          <h1 className="text-4xl font-extrabold tracking-tight text-amber-500">
+          <h1 className="text-4xl font-extrabold tracking-tight text-red-600">
             Game Time
           </h1>
         </div>
@@ -70,7 +70,7 @@ export default function Home() {
             </div>
           </div>
 
-          <button className="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 rounded-lg transition-colors text-sm">
+          <button className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg transition-colors text-sm">
             Generate Custom Itinerary
           </button>
         </div>
