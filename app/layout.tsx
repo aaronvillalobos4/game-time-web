@@ -19,7 +19,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
+      <head />
+      <body>
+        {children}
         {/* Partnerize Tag Script */}
         <Script
           id="partnerize-tag"
@@ -27,14 +29,14 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               (function () {
-                try {
-                  var tid = 'c7b6e1e8-98ca-4d8c-acd9-c2d6c30fc6bd';
-                  var pztp = {"p":"pzt","mi":0,"ma":99,"e":[]};
-                  var i = Math.floor(Math.random() * ((pztp.ma + 1) - pztp.mi)) + pztp.mi;
-                  
-                  var enc = new TextEncoder();
-                  var bin = enc.encode(pztp.p + i);
-                  
+                var tid = 'c7b6e1e8-98ca-4d8c-acd9-c2d6c30fc6bd';
+                var pztp = {"p":"pzt","mi":0,"ma":99,"e":[]};
+                var i = Math.floor(Math.random() * ((pztp.ma + 1) - pztp.mi)) + pztp.mi;
+                
+                var enc = new TextEncoder();
+                var bin = enc.encode(pztp.p + i);
+                
+                if (window.crypto && window.crypto.subtle) {
                   window.crypto.subtle.digest('SHA-1', bin).then(function (b) {
                     var u = new Uint8Array(b);
                     var a = [];
@@ -49,19 +51,16 @@ export default function RootLayout({
                     var s = document.createElement('script');
                     s.src = 'https://' + domain + '/tag/' + tid;
                     s.async = true;
-                    document.head.appendChild(s);
-                  }).catch(function(err) {
-                    console.error('Partnerize SHA error:', err);
+                    document.body.appendChild(s);
+                  }).catch(function(e) {
+                    console.error('Partnerize tag error:', e);
                   });
-                } catch (e) {
-                  console.error('Partnerize init error:', e);
                 }
               })();
             `,
           }}
         />
-      </head>
-      <body>{children}</body>
+      </body>
     </html>
   );
 }
