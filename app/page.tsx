@@ -21,7 +21,7 @@ export default function Home() {
         </div>
 
         <p className="text-gray-400 text-sm sm:text-base">
-          Plan your complete sports travel itinerary (tickets, flights, hotels).
+          Plan your complete sports trip itinerary (tickets, flights, hotels).
         </p>
 
         {/* Form Container */}
