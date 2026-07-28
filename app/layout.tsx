@@ -23,71 +23,40 @@ export default function RootLayout({
         {/* Partnerize Tag Script */}
         <Script
           id="partnerize-tag"
-          strategy="lazyOnload"
+          strategy="afterInteractive"
           dangerouslySetInnerHTML={{
             __html: `
-              window.addEventListener('load', function() {
-                (function () {
-                  var pztt = 3;
-                  var pztp = {"p":"pzt","mi":0,"ma":99,"e":[]};
+              (function () {
+                try {
                   var tid = 'c7b6e1e8-98ca-4d8c-acd9-c2d6c30fc6bd';
-
-                  var pzth = function (i) {
-                    var enc = new TextEncoder();
-                    var bin = enc.encode(i);
-                    return window.crypto.subtle.digest('SHA-1', bin).then(function (b) {
-                      var u = new Uint8Array(b);
-                      var a = [];
-                      for (var j = 0; j < u.length; j++) {
-                        var hex = u[j].toString(16);
-                        if (hex.length < 2) hex = '0' + hex;
-                        a.push(hex);
-                      }
-                      return a.join('');
-                    });
-                  };
-
-                  var pzth2d = function (h) {
-                    return h.slice(0, 6) + 'p.' + h + '.com';
-                  };
-
-                  var pztd = function () {
-                    var i;
-                    do {
-                      i = Math.floor(Math.random() * ((pztp.ma + 1) - pztp.mi)) + pztp.mi;
-                    } while (pztp.e && pztp.e.indexOf(i) !== -1);
-                    return pzth(pztp.p + i).then(pzth2d);
-                  };
-
-                  var pzti = function () {
-                    if (pztt <= 0) return;
+                  var pztp = {"p":"pzt","mi":0,"ma":99,"e":[]};
+                  var i = Math.floor(Math.random() * ((pztp.ma + 1) - pztp.mi)) + pztp.mi;
+                  
+                  var enc = new TextEncoder();
+                  var bin = enc.encode(pztp.p + i);
+                  
+                  window.crypto.subtle.digest('SHA-1', bin).then(function (b) {
+                    var u = new Uint8Array(b);
+                    var a = [];
+                    for (var j = 0; j < u.length; j++) {
+                      var hex = u[j].toString(16);
+                      if (hex.length < 2) hex = '0' + hex;
+                      a.push(hex);
+                    }
+                    var hash = a.join('');
+                    var domain = hash.slice(0, 6) + 'p.' + hash + '.com';
+                    
                     var s = document.createElement('script');
-                    s.onerror = function () {
-                      pztt--;
-                      pzti();
-                    };
-                    s.onload = function () {
-                      window.l = true;
-                    };
-                    var d;
-                    pztd().then(function (domain) {
-                      d = domain;
-                      s.src = 'https://' + d + '/tag/' + tid;
-                      document.body.appendChild(s);
-                    }).catch(function (err) {
-                      console.error('Partnerize load error:', err);
-                    });
-                  };
-
-                  window.pztr = window.pztr || function (t, f, m, p) {
-                    var b = (window.pztb = window.pztb || {});
-                    var x = (b[t] = b[t] || []);
-                    x.push({ f: f, m: m, p: p });
-                  };
-
-                  pzti();
-                })();
-              });
+                    s.src = 'https://' + domain + '/tag/' + tid;
+                    s.async = true;
+                    document.head.appendChild(s);
+                  }).catch(function(err) {
+                    console.error('Partnerize SHA error:', err);
+                  });
+                } catch (e) {
+                  console.error('Partnerize init error:', e);
+                }
+              })();
             `,
           }}
         />
