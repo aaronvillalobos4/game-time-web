@@ -1,8 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+
+const LOADING_MESSAGES = [
+  "Scouting ticket prices & stadium sections...",
+  "Searching flight routes & travel schedules...",
+  "Scouting highly-rated hotels near the venue...",
+  "Synthesizing your custom itinerary & budget breakdown...",
+  "Finalizing details (almost ready)..."
+];
 
 export default function Home() {
   const [event, setEvent] = useState("");
@@ -10,8 +19,21 @@ export default function Home() {
   const [departureCity, setDepartureCity] = useState("");
   const [budget, setBudget] = useState("");
   const [loading, setLoading] = useState(false);
+  const [loadingMsgIndex, setLoadingMsgIndex] = useState(0);
   const [itinerary, setItinerary] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  // Cycle through loading messages every 8 seconds while waiting
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (loading) {
+      setLoadingMsgIndex(0);
+      interval = setInterval(() => {
+        setLoadingMsgIndex((prev) => (prev + 1) % LOADING_MESSAGES.length);
+      }, 8000);
+    }
+    return () => clearInterval(interval);
+  }, [loading]);
 
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,9 +44,7 @@ export default function Home() {
     try {
       const response = await fetch("https://game-time-f7qt.onrender.com/api/itinerary", {
         method: "POST",
-        headers: { 
-          "Content-Type": "application/json" 
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           event,
           date,
@@ -39,7 +59,6 @@ export default function Home() {
 
       const data = await response.json();
       
-      // Extract the markdown string from the backend response
       if (data.itinerary) {
         setItinerary(data.itinerary);
       } else {
@@ -147,7 +166,7 @@ export default function Home() {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                <span>Generating Custom Itinerary...</span>
+                <span>{LOADING_MESSAGES[loadingMsgIndex]}</span>
               </>
             ) : (
               "Generate Custom Itinerary"
@@ -163,14 +182,14 @@ export default function Home() {
           </div>
         )}
 
-        {/* Formatted Markdown Output */}
+        {/* Formatted Output */}
         {itinerary && (
           <div className="bg-[#1e293b] p-6 sm:p-8 rounded-2xl border border-slate-800 text-left space-y-4 shadow-xl">
             <h2 className="text-2xl font-bold text-white border-b border-slate-700 pb-3">
               Your Custom Itinerary
             </h2>
-            <div className="prose prose-invert max-w-none text-slate-200 text-sm leading-relaxed space-y-4">
-              <ReactMarkdown>{itinerary}</ReactMarkdown>
+            <div className="prose prose-invert max-w-none text-slate-200 text-sm leading-relaxed prose-headings:text-white prose-a:text-red-400 prose-table:border-collapse prose-th:bg-slate-800 prose-th:p-2 prose-td:p-2 prose-td:border-b prose-td:border-slate-700">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{itinerary}</ReactMarkdown>
             </div>
           </div>
         )}
