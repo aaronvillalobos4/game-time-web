@@ -24,18 +24,18 @@ export default function Home() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   // Cycle through loading messages every 6 seconds while waiting
-useEffect(() => {
-  if (!loading) return;
+  useEffect(() => {
+    if (!loading) return;
 
-  // Reset to first message when loading starts
-  setLoadingMsgIndex(0);
+    // Reset to first message when loading starts
+    setLoadingMsgIndex(0);
 
-  const interval = setInterval(() => {
-    setLoadingMsgIndex((prevIndex) => (prevIndex + 1) % LOADING_MESSAGES.length);
-  }, 6000); // Changed to 6 seconds so users see updates faster!
+    const interval = setInterval(() => {
+      setLoadingMsgIndex((prevIndex) => (prevIndex + 1) % LOADING_MESSAGES.length);
+    }, 6000); // Changed to 6 seconds so users see updates faster!
 
-  return () => clearInterval(interval);
-}, [loading]);
+    return () => clearInterval(interval);
+  }, [loading]);
 
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
