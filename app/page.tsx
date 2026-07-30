@@ -23,7 +23,7 @@ export default function Home() {
   const [itinerary, setItinerary] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // Cycle through loading messages every 6 seconds while waiting
+// Cycle through loading messages every 6 seconds while waiting
 useEffect(() => {
   if (!loading) return;
 
