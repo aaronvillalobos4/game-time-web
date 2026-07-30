@@ -16,6 +16,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@tailwindcss/typography": "^0.5.20",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -25,6 +26,7 @@
     "typescript": "^5"
   },
   "allowScripts": {
-    "react-markdown@10.1.0": true
+    "react-markdown@10.1.0": true,
+    "@tailwindcss/typography@0.5.20": true
   }
 }
