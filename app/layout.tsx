@@ -14,11 +14,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        {/* Partnerize Tag injected directly into <head> */}
+      <body>
+        {children}
+
+        {/* Partnerize Verification Tag */}
         <Script
           id="partnerize-tag"
-          strategy="beforeInteractive"
+          strategy="afterInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               (function () {
@@ -113,14 +115,13 @@ export default function RootLayout({
                   if (document.readyState === 'complete' || document.readyState === 'interactive') {
                       pzti();
                   } else {
-                      window.addEventListener('DOMContentLoaded', pzti);
+                      document.addEventListener('DOMContentLoaded', pzti);
                   }
               })();
             `,
           }}
         />
-      </head>
-      <body>{children}</body>
+      </body>
     </html>
   );
 }
